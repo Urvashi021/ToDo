@@ -1,12 +1,36 @@
 import React from 'react'
 import CreateTodo from './components/CreateTodo'
+import TodoList from './components/TodoList'
+import { Container } from '@mui/material'
+import './App.css';
 
 function App() {
+  const [todos, setTodos] = React.useState([])
+
+  const fetchTodos = async () => {
+    const response = await fetch('https://to-do-project-8cbb6-default-rtdb.asia-southeast1.firebasedatabase.app/To-Do-Project.json')
+    const data = await response.json()
+    let todosBuilder = [];
+    for (const key in data) {
+        todosBuilder.push({
+            id: key,
+            ...data[key]
+        })
+    }
+    console.log(todosBuilder)
+    todosBuilder.reverse()
+    setTodos(todosBuilder)
+  }
+
+  React.useEffect(() => {
+    fetchTodos()
+  }, [])
+
   return (
-    <div>
-      App
-      <CreateTodo/>
-    </div>
+    <Container maxWidth="md">
+      <CreateTodo fetchTodos={fetchTodos} />
+      <TodoList todos={todos} fetchTodos={fetchTodos} />
+    </Container>
   )
 }
 

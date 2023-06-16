@@ -9,7 +9,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Box from "@mui/material/Box";
-import { enqueueSnackbar } from "notistack";
 import alert from "./alert";
 
 const style = {
@@ -35,7 +34,7 @@ const priorityOptions = [
   { label: "Low", value: "low" },
 ];
 
-export default function CreateTodo() {
+export default function CreateTodo({fetchTodos}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -57,6 +56,7 @@ export default function CreateTodo() {
   const handleInputDueDate = (value) => {
     setDueDate(value.format('YYYY-MM-DD'));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -70,15 +70,8 @@ export default function CreateTodo() {
       return;
     }
 
-    /*if (description.length < 3) {
-      alert("Description must be at least 3 characters long", "error");
-      return;
-    }*/
-
-    console.log(title, description, priority, dueDate);
-
-    //API Call
-    fetch (
+    // API Call
+    fetch(
       "https://to-do-project-8cbb6-default-rtdb.asia-southeast1.firebasedatabase.app/To-Do-Project.json",
       {
         method: "POST",
@@ -95,12 +88,14 @@ export default function CreateTodo() {
           "Content-Type": "application/json",
         },
       }
-    ).then(() => {
-      alert("ToDo created successfully", "success");
+    ).then (() => {
+      alert("Todo created successfully", "success");
+      fetchTodos();
       handleClose();
     }).catch(() => {
-      alert("Somthing went wrong", "error");
+      alert("Something went wrong", "error");
     });
+
     setTitle("");
     setDescription("");
     setPriority("");
